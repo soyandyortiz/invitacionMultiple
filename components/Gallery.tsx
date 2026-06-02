@@ -6,21 +6,21 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 const images = [
-  { src: "/images/galeria-0.jpg", alt: "Celebración familiar" },
-  { src: "/images/galeria-1.jpg", alt: "Momento especial" },
-  { src: "/images/galeria-2.jpg", alt: "Familia unida" },
+  { src: "/images/primera-comunion.png", alt: "Primera Comunión", label: "⛪ Primera Comunión" },
+  { src: "/images/boda.png",             alt: "Matrimonio",        label: "💍 Matrimonio" },
+  { src: "/images/bautizo.png",          alt: "Bautizos",          label: "🕊️ Bautizos" },
+  { src: "/images/galeria-0.jpg",        alt: "Celebración",       label: null },
+  { src: "/images/galeria-1.jpg",        alt: "Momento especial",  label: null },
+  { src: "/images/galeria-2.jpg",        alt: "Familia unida",     label: null },
 ];
 
 export default function Gallery() {
   const [lightbox, setLightbox] = useState<number | null>(null);
 
-  const prev = useCallback(() => {
-    setLightbox((i) => (i === null ? null : (i - 1 + images.length) % images.length));
-  }, []);
-
-  const next = useCallback(() => {
-    setLightbox((i) => (i === null ? null : (i + 1) % images.length));
-  }, []);
+  const prev = useCallback(() =>
+    setLightbox((i) => (i === null ? null : (i - 1 + images.length) % images.length)), []);
+  const next = useCallback(() =>
+    setLightbox((i) => (i === null ? null : (i + 1) % images.length)), []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -44,35 +44,48 @@ export default function Gallery() {
         >
           <h2 className="text-4xl font-serif text-gold-dark mb-4">Galería</h2>
           <div className="w-16 h-px bg-gold/40 mx-auto mb-4" />
-          <p className="text-foreground/50 font-serif italic text-sm">
-            Momentos para recordar siempre
-          </p>
+          <p className="text-foreground/50 font-serif italic text-sm">Momentos para recordar siempre</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {images.map((img, i) => (
+        {/* Fila eventos */}
+        <div className="grid grid-cols-3 gap-3 md:gap-4 mb-3 md:mb-4">
+          {images.slice(0, 3).map((img, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.15, duration: 0.6 }}
-              whileHover={{ scale: 1.02, y: -4 }}
+              transition={{ delay: i * 0.1 }}
+              whileHover={{ scale: 1.02, y: -3 }}
               onClick={() => setLightbox(i)}
-              className="relative aspect-[4/3] overflow-hidden rounded-2xl cursor-pointer shadow-md border border-beige/40 hover:shadow-xl hover:border-gold/20 transition-all duration-300 group"
+              className="relative aspect-[3/4] overflow-hidden rounded-2xl cursor-pointer shadow-md border border-beige/40 hover:shadow-xl hover:border-gold/25 transition-all group"
             >
-              <Image
-                src={img.src}
-                alt={img.alt}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-white text-xs uppercase tracking-widest font-bold bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full">
-                  Ver
-                </span>
-              </div>
+              <Image src={img.src} alt={img.alt} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              {img.label && (
+                <div className="absolute bottom-3 left-0 right-0 text-center">
+                  <span className="text-white text-xs font-bold tracking-wide drop-shadow-lg">{img.label}</span>
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Fila galería */}
+        <div className="grid grid-cols-3 gap-3 md:gap-4">
+          {images.slice(3).map((img, i) => (
+            <motion.div
+              key={i + 3}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: (i + 3) * 0.1 }}
+              whileHover={{ scale: 1.02, y: -3 }}
+              onClick={() => setLightbox(i + 3)}
+              className="relative aspect-[4/3] overflow-hidden rounded-2xl cursor-pointer shadow-md border border-beige/40 hover:shadow-xl hover:border-gold/25 transition-all group"
+            >
+              <Image src={img.src} alt={img.alt} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             </motion.div>
           ))}
         </div>
@@ -89,65 +102,51 @@ export default function Gallery() {
             className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center px-4"
             onClick={() => setLightbox(null)}
           >
-            {/* Prev */}
             <button
               onClick={(e) => { e.stopPropagation(); prev(); }}
               className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-10 p-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-gold/40 rounded-full text-white transition-all group"
             >
-              <ChevronLeft className="w-6 h-6 group-hover:text-gold transition-colors" />
+              <ChevronLeft className="w-6 h-6 group-hover:text-gold" />
             </button>
 
-            {/* Image */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={lightbox}
                 initial={{ opacity: 0, scale: 0.93 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.93 }}
-                transition={{ duration: 0.35 }}
-                className="relative w-full max-w-3xl aspect-[4/3]"
+                transition={{ duration: 0.3 }}
+                className="relative w-full max-w-2xl"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Image
-                  src={images[lightbox].src}
-                  alt={images[lightbox].alt}
-                  fill
-                  className="object-contain rounded-xl"
-                />
+                <div className={`relative w-full ${lightbox < 3 ? "aspect-[3/4]" : "aspect-[4/3]"}`}>
+                  <Image src={images[lightbox].src} alt={images[lightbox].alt} fill className="object-contain rounded-xl" />
+                </div>
+                {images[lightbox].label && (
+                  <p className="text-center text-white/70 text-sm mt-3 font-serif italic">
+                    {images[lightbox].label}
+                  </p>
+                )}
               </motion.div>
             </AnimatePresence>
 
-            {/* Next */}
             <button
               onClick={(e) => { e.stopPropagation(); next(); }}
               className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-10 p-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-gold/40 rounded-full text-white transition-all group"
             >
-              <ChevronRight className="w-6 h-6 group-hover:text-gold transition-colors" />
+              <ChevronRight className="w-6 h-6 group-hover:text-gold" />
             </button>
 
-            {/* Close */}
-            <button
-              onClick={() => setLightbox(null)}
-              className="absolute top-5 right-5 p-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white/70 hover:text-white transition-all"
-            >
+            <button onClick={() => setLightbox(null)} className="absolute top-5 right-5 p-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white/70 hover:text-white transition-all">
               <X className="w-5 h-5" />
             </button>
 
-            {/* Dots */}
-            <div className="absolute bottom-7 left-1/2 -translate-x-1/2 flex items-center gap-3">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5">
               {images.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={(e) => { e.stopPropagation(); setLightbox(i); }}
-                  aria-label={`Imagen ${i + 1}`}
-                >
+                <button key={i} onClick={(e) => { e.stopPropagation(); setLightbox(i); }}>
                   <motion.div
-                    animate={{
-                      width: i === lightbox ? 28 : 8,
-                      backgroundColor:
-                        i === lightbox ? "#D4AF37" : "rgba(255,255,255,0.35)",
-                    }}
-                    transition={{ duration: 0.35 }}
+                    animate={{ width: i === lightbox ? 24 : 7, backgroundColor: i === lightbox ? "#D4AF37" : "rgba(255,255,255,0.35)" }}
+                    transition={{ duration: 0.3 }}
                     className="h-[3px] rounded-full"
                   />
                 </button>

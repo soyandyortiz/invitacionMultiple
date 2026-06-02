@@ -52,13 +52,14 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Acceso admin - discreto, esquina inferior derecha */}
+      {/* Acceso admin */}
       <a
         href="/confirmaciones"
         title="Panel de administración"
-        className="absolute bottom-4 right-5 p-2 text-white/10 hover:text-white/40 transition-colors duration-300 group"
+        className="absolute bottom-4 right-5 flex items-center gap-1.5 text-white/25 hover:text-white/60 transition-colors duration-300 group"
       >
-        <Lock className="w-3.5 h-3.5" />
+        <Lock className="w-3 h-3" />
+        <span className="text-[9px] uppercase tracking-widest font-bold">Admin</span>
       </a>
     </footer>
   );
