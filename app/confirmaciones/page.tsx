@@ -16,7 +16,7 @@ interface RSVPData {
 }
 
 const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxwqcYqo47T46fFOzaEDkDFyqbB84ZXP_exedVgPMuwrdhKHdDLD3uJvbWUimQxKwM-/exec";
+  "https://script.google.com/macros/s/AKfycbz3hUH8osRa_3RtnGC2MOziEMfrk9cxkGnJsq_1d01rWY6TdGnHU5a7WpcU1ZWUtHo/exec";
 
 // ── Login ──────────────────────────────────────────────────────────────
 function LoginScreen({ onLogin }: { onLogin: () => void }) {
