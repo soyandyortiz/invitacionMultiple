@@ -50,11 +50,11 @@ export default function Hero() {
   return (
     <section
       id="inicio"
-      className="relative h-screen flex items-center justify-center overflow-hidden"
+      className="relative h-screen flex flex-col overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Sliding backgrounds */}
+      {/* ── Backgrounds (absoluto, detrás de todo) ── */}
       <AnimatePresence initial={false}>
         <motion.div
           key={current}
@@ -71,142 +71,141 @@ export default function Hero() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 bg-black/55" />
         </motion.div>
       </AnimatePresence>
 
-      {/* Main content */}
-      <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto w-full">
-        <motion.p
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1 }}
-          className="uppercase tracking-[0.4em] text-xs md:text-sm mb-6 font-sans font-bold bg-white/10 backdrop-blur-md px-5 py-2 rounded-full border border-white/20 inline-block"
-        >
-          Una Celebración en Familia · Sábado 4 de Julio, 2026
-        </motion.p>
+      {/* ── Contenido central (ocupa el espacio disponible) ── */}
+      <div className="relative z-10 flex-1 flex items-center justify-center px-14 md:px-24 pt-16">
+        <div className="text-center text-white w-full max-w-2xl">
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
-          className="text-6xl md:text-9xl font-serif mb-3 drop-shadow-2xl"
-        >
-          Silvana <span className="text-gold">&</span> Pablo
-        </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1 }}
+            className="uppercase tracking-[0.35em] text-[10px] md:text-[11px] mb-4 font-sans font-bold bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 inline-block"
+          >
+            Una Celebración en Familia · 4 de Julio, 2026
+          </motion.p>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.7 }}
-          className="text-sm md:text-lg font-serif italic text-white/70 mb-6"
-        >
-          junto a Pablo Ariel · Luka Josue · Rommel Adolfito
-        </motion.p>
-
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: "80px" }}
-          transition={{ duration: 1, delay: 1 }}
-          className="h-[2px] bg-gold mx-auto mb-8"
-        />
-
-        {/* Dynamic slide badge */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={current}
-            initial={{ opacity: 0, y: 10 }}
+          <motion.h1
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.45 }}
-            className="mb-10"
+            transition={{ duration: 1.1, delay: 0.25, ease: "easeOut" }}
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif leading-tight mb-2 drop-shadow-2xl whitespace-nowrap"
           >
-            <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/25 px-5 py-2.5 rounded-full text-sm md:text-base font-serif mb-2">
-              <span className="text-xl">{slide.emoji}</span>
-              <span className="font-bold">{slide.event}</span>
-              <span className="text-white/50 hidden sm:inline">·</span>
-              <span className="text-white/75 hidden sm:inline">{slide.time}</span>
-            </div>
-            <p className="text-white/60 text-xs md:text-sm font-serif italic">
-              {slide.names}
-            </p>
-          </motion.div>
-        </AnimatePresence>
+            Silvana <span className="text-gold">&</span> Pablo
+          </motion.h1>
 
-        <motion.a
-          href="#rsvp"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.6 }}
-          whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(184,134,11,0.4)" }}
-          whileTap={{ scale: 0.95 }}
-          className="inline-block px-10 py-5 bg-gold text-white font-serif text-xl rounded-full shadow-2xl hover:bg-gold-dark transition-all duration-300"
-        >
-          Confirmar Asistencia
-        </motion.a>
-      </div>
-
-      {/* Left arrow */}
-      <button
-        onClick={prev}
-        aria-label="Anterior"
-        className="absolute left-3 md:left-7 top-1/2 -translate-y-1/2 z-20 p-2.5 md:p-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/25 hover:border-gold/40 transition-all group"
-      >
-        <ChevronLeft className="w-5 h-5 group-hover:text-gold transition-colors" />
-      </button>
-
-      {/* Right arrow */}
-      <button
-        onClick={next}
-        aria-label="Siguiente"
-        className="absolute right-3 md:right-7 top-1/2 -translate-y-1/2 z-20 p-2.5 md:p-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/25 hover:border-gold/40 transition-all group"
-      >
-        <ChevronRight className="w-5 h-5 group-hover:text-gold transition-colors" />
-      </button>
-
-      {/* Dots with event labels */}
-      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 flex items-end gap-5 md:gap-8">
-        {slides.map((s, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            aria-label={s.event}
-            className="flex flex-col items-center gap-2 group"
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.6 }}
+            className="text-xs md:text-sm font-serif italic text-white/60 mb-4"
           >
-            <span
-              className={`text-[9px] md:text-[10px] uppercase tracking-[0.15em] font-bold transition-colors duration-300 ${
-                i === current ? "text-gold" : "text-white/35 group-hover:text-white/60"
-              }`}
-            >
-              {s.event}
-            </span>
+            junto a Pablo Ariel · Luka Josue · Rommel Adolfito
+          </motion.p>
+
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: "56px" }}
+            transition={{ duration: 0.9, delay: 0.9 }}
+            className="h-px bg-gold mx-auto mb-5"
+          />
+
+          {/* Badge dinámico del slide */}
+          <AnimatePresence mode="wait">
             <motion.div
-              animate={{
-                width: i === current ? 32 : 8,
-                backgroundColor:
-                  i === current ? "#D4AF37" : "rgba(255,255,255,0.35)",
-              }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="h-[3px] rounded-full"
-            />
-          </button>
-        ))}
+              key={current}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4 }}
+              className="mb-6"
+            >
+              <div className="inline-flex items-center gap-2 bg-white/12 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full text-sm font-serif mb-1.5 flex-wrap justify-center">
+                <span className="text-base">{slide.emoji}</span>
+                <span className="font-bold">{slide.event}</span>
+                <span className="text-white/45 hidden sm:inline">·</span>
+                <span className="text-white/70 text-xs hidden sm:inline">{slide.time}</span>
+              </div>
+              <p className="text-white/50 text-[11px] font-serif italic">{slide.names}</p>
+            </motion.div>
+          </AnimatePresence>
+
+          <motion.a
+            href="#rsvp"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.5 }}
+            whileHover={{ scale: 1.05, boxShadow: "0 16px 36px rgba(184,134,11,0.45)" }}
+            whileTap={{ scale: 0.97 }}
+            className="inline-block px-8 py-3.5 bg-gold text-white font-serif text-lg rounded-full shadow-xl hover:bg-gold-dark transition-all duration-300"
+          >
+            Confirmar Asistencia
+          </motion.a>
+
+        </div>
       </div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: 2.5 }}
-        className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 cursor-pointer group"
-        onClick={() =>
-          document.getElementById("countdown")?.scrollIntoView({ behavior: "smooth" })
-        }
-      >
-        <span className="text-white/40 text-[9px] uppercase tracking-[0.3em] font-bold group-hover:text-gold/70 transition-colors">
-          Ver Agenda
-        </span>
-        <ChevronDown className="w-4 h-4 text-white/30 group-hover:text-gold/70 transition-colors" />
-      </motion.div>
+      {/* ── Barra inferior: flechas + dots + scroll ── */}
+      <div className="relative z-20 flex items-center justify-between px-4 md:px-8 py-4">
+
+        {/* Flecha izquierda */}
+        <button
+          onClick={prev}
+          aria-label="Anterior"
+          className="p-2.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white hover:bg-white/25 hover:border-gold/50 transition-all group flex-shrink-0"
+        >
+          <ChevronLeft className="w-5 h-5 group-hover:text-gold transition-colors" />
+        </button>
+
+        {/* Dots con etiquetas */}
+        <div className="flex items-end gap-4 md:gap-8">
+          {slides.map((s, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              aria-label={s.event}
+              className="flex flex-col items-center gap-1.5 group"
+            >
+              <span
+                className={`text-[8px] md:text-[10px] uppercase tracking-[0.1em] font-bold transition-colors duration-300 ${
+                  i === current ? "text-gold" : "text-white/30 group-hover:text-white/55"
+                }`}
+              >
+                {s.event}
+              </span>
+              <motion.div
+                animate={{
+                  width: i === current ? 28 : 8,
+                  backgroundColor:
+                    i === current ? "#D4AF37" : "rgba(255,255,255,0.3)",
+                }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+                className="h-[3px] rounded-full"
+              />
+            </button>
+          ))}
+        </div>
+
+        {/* Scroll / Ver Agenda */}
+        <motion.button
+          animate={{ y: [0, 5, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          onClick={() =>
+            document.getElementById("countdown")?.scrollIntoView({ behavior: "smooth" })
+          }
+          aria-label="Ver agenda"
+          className="flex flex-col items-center gap-1 group flex-shrink-0"
+        >
+          <span className="text-white/30 text-[8px] md:text-[9px] uppercase tracking-widest font-bold group-hover:text-gold/60 transition-colors">
+            Agenda
+          </span>
+          <ChevronDown className="w-4 h-4 text-white/30 group-hover:text-gold/60 transition-colors" />
+        </motion.button>
+
+      </div>
     </section>
   );
 }
