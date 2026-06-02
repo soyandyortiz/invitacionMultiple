@@ -2,8 +2,9 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Countdown from "@/components/Countdown";
 import EventInfo from "@/components/EventInfo";
+import Gallery from "@/components/Gallery";
+import Story from "@/components/Story";
 import RSVP from "@/components/RSVP";
-import Story from "@/components/Story"; // Protagonistas section
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -13,8 +14,9 @@ export default function Home() {
       <Hero />
       <Countdown />
       <EventInfo />
-      <RSVP />
+      <Gallery />
       <Story />
+      <RSVP />
       <Footer />
     </main>
   );

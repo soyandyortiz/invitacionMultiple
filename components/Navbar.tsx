@@ -20,8 +20,8 @@ export default function Navbar() {
     { name: "Inicio", href: "#inicio" },
     { name: "Agenda", href: "#countdown" },
     { name: "Eventos", href: "#evento" },
+    { name: "Galería", href: "#galeria" },
     { name: "Confirmar", href: "#rsvp" },
-    { name: "Protagonistas", href: "#protagonistas" },
   ];
 
   return (
