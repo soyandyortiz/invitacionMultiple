@@ -1,33 +1,70 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Gift, Shirt, MapPin } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MapPin, ChevronDown, Users } from "lucide-react";
+
+const events = [
+  {
+    emoji: "⛪",
+    time: "10:00 AM",
+    title: "Primera Comunión",
+    location: "Iglesia de Santa Faz",
+    mapLink: "https://www.google.com/maps/search/Iglesia+Santa+Faz",
+    protagonists: ["Pablo Ariel Morocho Clavijo"],
+    details: ["Madrina: Elizabeth Lluguin"],
+    accent: "gold",
+    bgFrom: "from-amber-50",
+    borderHover: "hover:border-amber-300",
+    dotColor: "bg-gold",
+  },
+  {
+    emoji: "💍",
+    time: "2:00 PM",
+    title: "Matrimonio Civil y Eclesiástico",
+    location: "Iglesia de San Francisco",
+    mapLink: "https://www.google.com/maps/search/Iglesia+San+Francisco+Riobamba+Ecuador",
+    protagonists: ["Silvana Clavijo", "Pablo Morocho"],
+    details: [],
+    accent: "rose",
+    bgFrom: "from-rose-50",
+    borderHover: "hover:border-rose-300",
+    dotColor: "bg-rose-400",
+  },
+  {
+    emoji: "🕊️",
+    time: "A continuación del matrimonio",
+    title: "Bautizos",
+    location: "Iglesia de San Francisco",
+    mapLink: "https://www.google.com/maps/search/Iglesia+San+Francisco+Riobamba+Ecuador",
+    protagonists: ["Luka Josue", "Rommel Adolfito"],
+    details: ["Se realiza en la misma iglesia que la boda"],
+    accent: "sky",
+    bgFrom: "from-sky-50",
+    borderHover: "hover:border-sky-300",
+    dotColor: "bg-sky-400",
+  },
+  {
+    emoji: "🏡",
+    time: "Finalizado el acto religioso",
+    title: "Recepción y Fiesta",
+    location: "Casa de Targelia Godoy",
+    mapLink: "https://www.google.com/maps/search/Av+Alfonso+Chavez+Rivera+Angel+Martinez",
+    protagonists: [],
+    details: ["Av. Alfonso Chávez entre Rivera y Dr. Ángel Martínez"],
+    accent: "emerald",
+    bgFrom: "from-emerald-50",
+    borderHover: "hover:border-emerald-300",
+    dotColor: "bg-emerald-400",
+  },
+];
 
 export default function EventInfo() {
-  const events = [
-    {
-      title: "Ceremonia Religiosa",
-      date: "Sábado, 28 de Febrero",
-      time: "19:00",
-      location: "Iglesia Católica San Francisco del Monte del Cedral de Penipe",
-      address: "Iglesia central de penipe frente al parque",
-      link: "https://maps.app.goo.gl/H1KDGJK6BXqEX8BR7?g_st=iw",
-      icon: <MapPin className="w-6 h-6 text-gold" />,
-    },
-    {
-      title: "Recepción",
-      date: "Sábado, 28 de Febrero",
-      time: "21:00",
-      location: "Rio Camping",
-      address: "Calles: Cap. Juan Maji & De los Duchicelas, Yaruquíes",
-      link: "https://maps.app.goo.gl/t8jGSXN6rWHeQEjB8",
-      icon: <MapPin className="w-6 h-6 text-gold" />,
-    },
-  ];
+  const [activeIndex, setActiveIndex] = useState<number | null>(0);
 
   return (
     <section id="evento" className="py-24 bg-beige/10 overflow-hidden">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-3xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -35,157 +72,163 @@ export default function EventInfo() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-serif text-gold-dark mb-4">Información del Evento</h2>
+          <h2 className="text-4xl md:text-5xl font-serif text-gold-dark mb-4">
+            Agenda del Día
+          </h2>
           <div className="w-24 h-px bg-gold/40 mx-auto mb-6" />
-          <p className="text-foreground/60 max-w-lg mx-auto italic leading-relaxed">
-            "La invitación es individual y exclusiva para personas adultas mayores de edad."
+          <p className="text-foreground/60 max-w-lg mx-auto font-serif italic text-sm leading-relaxed">
+            Sábado 4 de Julio de 2026 — un día lleno de celebraciones en familia
           </p>
         </motion.div>
 
-        <div className="w-full overflow-hidden bg-gold/5 py-3 md:py-4 mb-14 border-y border-gold/20 flex">
-          <motion.div
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{
-              repeat: Infinity,
-              ease: "linear",
-              duration: 35
-            }}
-            className="flex whitespace-nowrap shrink-0"
-          >
-            {[...Array(4)].map((_, i) => (
-              <span key={i} className="text-gold-dark text-sm md:text-base px-8 md:px-12 font-serif flex items-center gap-2 drop-shadow-sm">
-                <span className="text-lg">🚐</span> 
-                <strong>Ruta para invitados:</strong> Salida del bus desde Riobamba hacia el cantón Penipe donde será la boda en la iglesia a las 19:00pm y también el regreso de Penipe hasta la Recepción donde se realizará el evento.
-              </span>
-            ))}
-          </motion.div>
+        <div className="relative">
+          {/* Vertical timeline line */}
+          <div className="absolute left-6 top-4 bottom-4 w-px bg-gradient-to-b from-gold/30 via-gold/20 to-transparent hidden sm:block" />
+
+          <div className="space-y-4">
+            {events.map((event, index) => {
+              const isActive = activeIndex === index;
+
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="relative sm:pl-16"
+                >
+                  {/* Timeline dot */}
+                  <div
+                    className={`absolute left-4 top-6 w-4 h-4 rounded-full border-2 border-white shadow-md hidden sm:block ${event.dotColor} transition-all duration-300 ${isActive ? "scale-125" : ""}`}
+                  />
+
+                  <div
+                    className={`bg-white rounded-2xl border border-beige/60 shadow-sm cursor-pointer transition-all duration-300 overflow-hidden ${event.borderHover} ${isActive ? "shadow-lg ring-1 ring-gold/20" : ""}`}
+                    onClick={() =>
+                      setActiveIndex(isActive ? null : index)
+                    }
+                  >
+                    {/* Card header — always visible */}
+                    <div className="flex items-center justify-between p-5 gap-4">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <span className="text-3xl flex-shrink-0">{event.emoji}</span>
+                        <div className="min-w-0">
+                          <p className="text-gold font-bold text-xs uppercase tracking-[0.15em] mb-0.5">
+                            {event.time}
+                          </p>
+                          <h3 className="text-lg md:text-xl font-serif text-gold-dark leading-tight truncate">
+                            {event.title}
+                          </h3>
+                        </div>
+                      </div>
+                      <motion.div
+                        animate={{ rotate: isActive ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex-shrink-0"
+                      >
+                        <ChevronDown className="w-5 h-5 text-gold/60" />
+                      </motion.div>
+                    </div>
+
+                    {/* Expanded content */}
+                    <AnimatePresence initial={false}>
+                      {isActive && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.35, ease: "easeInOut" }}
+                          className="overflow-hidden"
+                        >
+                          <div className={`px-5 pb-5 bg-gradient-to-b ${event.bgFrom} to-white`}>
+                            <div className="pt-3 border-t border-beige/60 space-y-4">
+                              {/* Location */}
+                              <div className="flex items-start gap-3">
+                                <MapPin className="w-4 h-4 text-gold mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="font-bold text-foreground text-sm">
+                                    {event.location}
+                                  </p>
+                                  {event.details.map((detail, i) => (
+                                    <p key={i} className="text-foreground/60 text-xs mt-0.5 leading-relaxed">
+                                      {detail}
+                                    </p>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Protagonists */}
+                              {event.protagonists.length > 0 && (
+                                <div className="flex items-start gap-3">
+                                  <Users className="w-4 h-4 text-gold mt-0.5 flex-shrink-0" />
+                                  <div>
+                                    <p className="text-xs text-foreground/50 uppercase tracking-widest font-bold mb-1">
+                                      {event.protagonists.length === 1
+                                        ? "Protagonista"
+                                        : "Protagonistas"}
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                      {event.protagonists.map((name, i) => (
+                                        <span
+                                          key={i}
+                                          className="bg-gold/10 text-gold-dark text-sm font-serif px-3 py-1 rounded-full border border-gold/20"
+                                        >
+                                          {name}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Map link */}
+                              <motion.a
+                                href={event.mapLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.97 }}
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.15em] font-bold text-gold border border-gold/30 px-4 py-2.5 rounded-xl hover:bg-gold hover:text-white hover:border-gold transition-all mt-1"
+                              >
+                                <MapPin className="w-3.5 h-3.5" />
+                                Ver Ubicación
+                              </motion.a>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {events.map((event, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 50, scale: 0.9 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ 
-                duration: 0.6, 
-                delay: index * 0.2,
-                type: "spring",
-                stiffness: 100 
-              }}
-              whileHover={{ y: -10 }}
-              className="bg-white p-8 rounded-2xl shadow-sm border border-beige/40 flex flex-col h-full group transition-all hover:shadow-xl"
-            >
-              <div className="mb-6 w-12 h-12 bg-gold/5 rounded-full flex items-center justify-center group-hover:bg-gold/10 transition-colors">
-                {event.icon}
-              </div>
-              <h3 className="text-2xl font-serif text-gold-dark mb-2">{event.title}</h3>
-              <p className="text-gold font-semibold mb-6 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-                {event.date} • {event.time}
-              </p>
-              <div className="flex-grow space-y-2 text-foreground/70 mb-8">
-                <p className="font-bold text-foreground text-lg">{event.location}</p>
-                <p className="text-sm leading-relaxed">{event.address}</p>
-              </div>
-              <motion.a 
-                href={event.link}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                target={event.link !== "#" ? "_blank" : "_self"}
-                className="inline-block text-center py-4 bg-transparent border border-gold/30 text-gold text-xs uppercase tracking-[0.2em] font-bold hover:bg-gold-dark hover:text-white hover:border-gold-dark transition-all rounded-xl"
-              >
-                Ver Ubicación
-              </motion.a>
-            </motion.div>
-          ))}
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8 mt-16">
-          {/* Dress Code */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="bg-white p-10 rounded-3xl border border-beige shadow-sm relative overflow-hidden group"
-          >
-            <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-500">
-              <Shirt className="w-24 h-24 text-gold-dark" />
-            </div>
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-gold/5 rounded-xl">
-                  <Shirt className="w-6 h-6 text-gold" />
-                </div>
-                <h3 className="text-2xl font-serif text-gold-dark">Código de Vestimenta</h3>
-              </div>
-              <p className="text-3xl font-serif text-gold mb-4 uppercase tracking-widest">Formal</p>
-              <p className="text-foreground/70 leading-relaxed max-w-sm">
-                La ceremonia será al aire libre y por la noche puede refrescar bastante. 
-                <span className="font-bold block mt-4 text-gold-dark text-lg italic">
-                  ¡No olvides traer algo abrigadito para cubrirte!
-                </span>
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Gifts - HIGHLIGHTED */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="bg-gold-dark p-10 rounded-3xl shadow-2xl relative overflow-hidden group"
-          >
-            {/* Background pattern */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-white/40 transition-all duration-700" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/30 rounded-full -ml-32 -mb-32 blur-3xl" />
-            </div>
-
-            <div className="relative z-10 text-white">
-              <motion.div 
-                animate={{ 
-                  y: [0, -10, 0],
-                }}
-                transition={{ 
-                  duration: 4, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="flex items-center gap-3 mb-6"
-              >
-                <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm">
-                  <Gift className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-3xl font-serif">Mesa de Regalos</h3>
-              </motion.div>
-              
-              <div className="w-16 h-1 bg-gold/60 mb-8 rounded-full" />
-              
-              <motion.p 
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="text-lg leading-relaxed italic opacity-90 mb-8 font-serif"
-              >
-                "Su presencia ya es el mayor regalo que podemos recibir. Si desea contribuir a nuestro futuro juntos, un detalle en sobre será recibido con mucho cariño."
-              </motion.p>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-                className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 inline-block"
-              >
-                <p className="text-xs uppercase tracking-widest font-bold opacity-60 mb-1">Tradición</p>
-                <p className="text-2xl font-serif">Lluvia de Sobres</p>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
+        {/* Dress code note */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+          className="mt-14 bg-gold-dark text-white p-8 rounded-3xl shadow-xl relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mr-20 -mt-20" />
+          <div className="relative z-10">
+            <p className="text-xs uppercase tracking-[0.3em] font-bold opacity-60 mb-2">
+              Código de Vestimenta
+            </p>
+            <p className="text-3xl font-serif mb-3 uppercase tracking-widest">
+              Formal
+            </p>
+            <p className="text-white/80 text-sm leading-relaxed font-sans">
+              Te esperamos vestido/a con elegancia para acompañar la solemnidad
+              de los actos religiosos y la celebración de la noche.
+            </p>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

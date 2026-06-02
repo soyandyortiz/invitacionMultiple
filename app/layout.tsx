@@ -13,8 +13,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Eric & Evelin | Nuestra Boda",
-  description: "Acompáñanos a celebrar nuestra unión el 28 de Febrero de 2026 en Riobamba, Ecuador.",
+  title: "Morocho · Clavijo | Celebración Familiar 2026",
+  description: "Una celebración en familia: Primera Comunión, Matrimonio, Bautizos y Recepción. Sábado 4 de Julio de 2026.",
 };
 
 export default function RootLayout({

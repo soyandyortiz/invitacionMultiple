@@ -18,10 +18,10 @@ export default function Navbar() {
 
   const navItems = [
     { name: "Inicio", href: "#inicio" },
-    { name: "Cuándo", href: "#countdown" },
-    { name: "Evento", href: "#evento" },
+    { name: "Agenda", href: "#countdown" },
+    { name: "Eventos", href: "#evento" },
     { name: "Confirmar", href: "#rsvp" },
-    { name: "Historia", href: "#historia" },
+    { name: "Protagonistas", href: "#protagonistas" },
   ];
 
   return (
@@ -36,7 +36,7 @@ export default function Navbar() {
           animate={{ opacity: 1, x: 0 }}
           className={`font-serif text-2xl ${isScrolled || isOpen ? "text-gold-dark" : "text-white"}`}
         >
-          E & E
+          M · C
         </motion.span>
 
         {/* Desktop Menu */}

@@ -2,18 +2,32 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { Heart, Send } from "lucide-react";
+import { Heart, Send, CheckSquare, Square } from "lucide-react";
 
 interface GuestInfo {
   name: string;
   type: string;
 }
 
+const eventOptions = [
+  { id: "primera-comunion", label: "⛪ Primera Comunión (10:00 AM)" },
+  { id: "matrimonio", label: "💍 Matrimonio (2:00 PM)" },
+  { id: "bautizos", label: "🕊️ Bautizos (Después del Matrimonio)" },
+  { id: "recepcion", label: "🏡 Recepción y Fiesta" },
+];
+
+const originOptions = [
+  "Familia Clavijo",
+  "Familia Morocho",
+  "Amistades",
+];
+
 export default function RSVP() {
   const [form, setForm] = useState({
-    origin: "Familia de Novia Evelin Cabezas",
+    origin: "Familia Clavijo",
     fullName: "",
     attending: "yes",
+    selectedEvents: ["primera-comunion", "matrimonio", "bautizos", "recepcion"] as string[],
     guestCount: 0,
     companions: [] as GuestInfo[],
     message: "",
@@ -22,9 +36,7 @@ export default function RSVP() {
   const [submitted, setSubmitted] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [hearts, setHearts] = useState<
-    { x: string; duration: number; size: number }[]
-  >([]);
+  const [hearts, setHearts] = useState<{ x: string; duration: number; size: number }[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -33,32 +45,45 @@ export default function RSVP() {
         x: Math.random() * 100 + "vw",
         duration: 10 + Math.random() * 20,
         size: 48 + Math.random() * 48,
-      })),
+      }))
     );
   }, []);
+
+  const toggleEvent = (id: string) => {
+    setForm((prev) => ({
+      ...prev,
+      selectedEvents: prev.selectedEvents.includes(id)
+        ? prev.selectedEvents.filter((e) => e !== id)
+        : [...prev.selectedEvents, id],
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSending(true);
-
     try {
+      const payload = {
+        origin: form.origin,
+        fullName: form.fullName,
+        attending: form.attending,
+        events: form.selectedEvents.join(", "),
+        guestCount: form.guestCount,
+        companions: form.companions,
+        message: form.message,
+      };
       await fetch(
         "https://script.google.com/macros/s/AKfycbxwqcYqo47T46fFOzaEDkDFyqbB84ZXP_exedVgPMuwrdhKHdDLD3uJvbWUimQxKwM-/exec",
         {
           method: "POST",
           mode: "no-cors",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(form),
-        },
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
       );
       setSubmitted(true);
     } catch (error) {
       console.error("Error saving RSVP:", error);
-      alert(
-        "Hubo un error al enviar tu respuesta. Por favor intenta de nuevo.",
-      );
+      alert("Hubo un error al enviar tu respuesta. Por favor intenta de nuevo.");
     } finally {
       setIsSending(false);
     }
@@ -73,16 +98,12 @@ export default function RSVP() {
   const handleGuestCountChange = (count: number) => {
     const newCompanions = Array(count)
       .fill(null)
-      .map(
-        (_, i) =>
-          form.companions[i] || { name: "", type: "familiar/acompañante" },
-      );
+      .map((_, i) => form.companions[i] || { name: "", type: "familiar/acompañante" });
     setForm({ ...form, guestCount: count, companions: newCompanions });
   };
 
   return (
     <section id="rsvp" className="py-24 bg-ivory px-6 relative overflow-hidden">
-      {/* Floating background hearts */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
         {mounted &&
           hearts.map((heart, i) => (
@@ -90,12 +111,7 @@ export default function RSVP() {
               key={i}
               initial={{ y: "100vh", x: heart.x, opacity: 0 }}
               animate={{ y: "-10vh", opacity: 1 }}
-              transition={{
-                duration: heart.duration,
-                repeat: Infinity,
-                delay: i * 2,
-                ease: "linear",
-              }}
+              transition={{ duration: heart.duration, repeat: Infinity, delay: i * 2, ease: "linear" }}
               className="absolute"
             >
               <Heart size={heart.size} />
@@ -103,10 +119,9 @@ export default function RSVP() {
           ))}
       </div>
 
-      <div className="max-w-3xl mx-auto bg-white p-8 md:p-16 rounded-[3rem] shadow-2xl border border-gold/10 relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full -mr-32 -mt-32" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 rounded-full -ml-32 -mb-32" />
+      <div className="max-w-3xl mx-auto bg-white p-8 md:p-14 rounded-[3rem] shadow-2xl border border-gold/10 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full -mr-32 -mt-32 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 rounded-full -ml-32 -mb-32 pointer-events-none" />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -123,8 +138,9 @@ export default function RSVP() {
             Confirmar Asistencia
           </h2>
           <div className="w-16 h-px bg-gold/40 mx-auto mb-6" />
-          <p className="text-foreground/60 text-sm leading-relaxed max-w-sm mx-auto mb-4">
-            Favor de confirmar hasta el: Viernes, 27 de Febrero de 2026.
+          <p className="text-foreground/60 text-sm leading-relaxed max-w-sm mx-auto">
+            Favor confirmar hasta el:{" "}
+            <strong className="text-gold-dark">Lunes, 30 de Junio de 2026</strong>
           </p>
         </motion.div>
 
@@ -139,38 +155,24 @@ export default function RSVP() {
               transition={{ duration: 2, repeat: Infinity }}
               className="text-8xl mb-8"
             >
-              🥂
+              🎉
             </motion.div>
             <h3 className="text-4xl font-serif text-gold-dark mb-4">
               ¡Gracias por confirmar!
             </h3>
-            <div className="text-xl text-foreground/70 leading-relaxed font-serif italic mb-10">
-              <p className="mb-4">
-                Hemos registrado tu respuesta con éxito. <br />
-                Estamos ansiosos de verte en nuestro gran día.
-              </p>
-            </div>
-            <div className="w-full overflow-hidden bg-gold/5 py-4 mb-10 rounded-2xl border border-gold/20 flex shadow-inner">
-              <motion.div
-                animate={{ x: ["0%", "-50%"] }}
-                transition={{
-                  repeat: Infinity,
-                  ease: "linear",
-                  duration: 25,
-                }}
-                className="flex whitespace-nowrap shrink-0"
-              >
-                {[...Array(3)].map((_, i) => (
-                  <span
-                    key={i}
-                    className="text-gold-dark text-sm md:text-base px-6 font-serif flex items-center gap-2"
-                  >
-                    <span className="text-lg">🚐</span>
-                    <strong>Ruta:</strong> Salida del bus desde Riobamba hacia
-                    el cantón Penipe a las 19:00pm y regreso hasta la Recepción.
+            <p className="text-xl text-foreground/70 leading-relaxed font-serif italic mb-10 max-w-md mx-auto">
+              Hemos registrado tu respuesta con éxito. Estamos emocionados de
+              compartir este día tan especial contigo.
+            </p>
+            <div className="flex flex-wrap justify-center gap-2 mb-10">
+              {form.selectedEvents.map((id) => {
+                const ev = eventOptions.find((e) => e.id === id);
+                return ev ? (
+                  <span key={id} className="bg-gold/10 text-gold-dark text-sm px-4 py-2 rounded-full border border-gold/20 font-serif">
+                    {ev.label}
                   </span>
-                ))}
-              </motion.div>
+                ) : null;
+              })}
             </div>
             <button
               onClick={() => setSubmitted(false)}
@@ -181,20 +183,16 @@ export default function RSVP() {
           </motion.div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-10 relative z-10">
-            {/* Step 1: Origin */}
+            {/* Origin */}
             <div className="space-y-4">
               <label className="block text-xs font-bold text-gold-dark uppercase tracking-[0.2em]">
                 ¿De parte de quién vienes?
               </label>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {[
-                  "Familia de Novia Evelin Cabezas",
-                  "Familia de Novio Eric Ortiz",
-                  "Amistades",
-                ].map((opt) => (
+                {originOptions.map((opt) => (
                   <label
                     key={opt}
-                    className={`flex items-center justify-center p-4 border rounded-2xl cursor-pointer transition-all text-center h-full ${
+                    className={`flex items-center justify-center p-4 border rounded-2xl cursor-pointer transition-all text-center ${
                       form.origin === opt
                         ? "bg-gold text-white border-gold shadow-lg scale-[1.02]"
                         : "bg-ivory/20 border-beige hover:border-gold/30"
@@ -206,13 +204,9 @@ export default function RSVP() {
                       name="origin"
                       value={opt}
                       checked={form.origin === opt}
-                      onChange={(e) =>
-                        setForm({ ...form, origin: e.target.value })
-                      }
+                      onChange={(e) => setForm({ ...form, origin: e.target.value })}
                     />
-                    <span
-                      className={`text-[13px] leading-tight font-medium ${form.origin === opt ? "text-white" : "text-foreground/60"}`}
-                    >
+                    <span className={`text-[13px] leading-tight font-medium ${form.origin === opt ? "text-white" : "text-foreground/60"}`}>
                       {opt}
                     </span>
                   </label>
@@ -258,15 +252,46 @@ export default function RSVP() {
               </div>
             </div>
 
-            {/* Dynamic Guests Section */}
             <AnimatePresence>
               {form.attending === "yes" && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="space-y-6"
+                  className="space-y-8"
                 >
+                  {/* Events selection */}
+                  <div className="space-y-4">
+                    <label className="block text-xs font-bold text-gold-dark uppercase tracking-[0.2em]">
+                      ¿A qué eventos asistirás?
+                    </label>
+                    <div className="space-y-3">
+                      {eventOptions.map((ev) => {
+                        const selected = form.selectedEvents.includes(ev.id);
+                        return (
+                          <button
+                            key={ev.id}
+                            type="button"
+                            onClick={() => toggleEvent(ev.id)}
+                            className={`w-full flex items-center gap-3 p-4 rounded-2xl border transition-all text-left ${
+                              selected
+                                ? "bg-gold/10 border-gold/40 text-gold-dark"
+                                : "bg-ivory/20 border-beige text-foreground/50 hover:border-gold/20"
+                            }`}
+                          >
+                            {selected ? (
+                              <CheckSquare className="w-5 h-5 text-gold flex-shrink-0" />
+                            ) : (
+                              <Square className="w-5 h-5 text-foreground/30 flex-shrink-0" />
+                            )}
+                            <span className="text-sm font-medium">{ev.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Companions */}
                   <div className="p-8 bg-gold/5 rounded-3xl border border-gold/10">
                     <p className="text-xs text-gold-dark font-bold uppercase tracking-widest mb-6 text-center">
                       Acompañantes adicionales
@@ -296,7 +321,7 @@ export default function RSVP() {
                           exit={{ opacity: 0, height: 0 }}
                           className="space-y-4"
                         >
-                          <p className="text-[11px] text-center text-foreground/50 italic mb-6">
+                          <p className="text-[11px] text-center text-foreground/50 italic mb-4">
                             * Ingrese el nombre de sus familiares o acompañantes
                           </p>
                           {Array(form.guestCount)
@@ -314,9 +339,7 @@ export default function RSVP() {
                                   placeholder={`Nombre del acompañante ${i + 1}`}
                                   className="w-full p-4 bg-white border border-beige rounded-xl focus:outline-none focus:border-gold transition-all text-sm font-sans"
                                   value={form.companions[i]?.name || ""}
-                                  onChange={(e) =>
-                                    updateCompanion(i, e.target.value)
-                                  }
+                                  onChange={(e) => updateCompanion(i, e.target.value)}
                                 />
                               </motion.div>
                             ))}
@@ -328,9 +351,10 @@ export default function RSVP() {
               )}
             </AnimatePresence>
 
+            {/* Message */}
             <div className="space-y-4">
               <label className="block text-xs font-bold text-gold-dark uppercase tracking-[0.2em]">
-                Desea dejarnos un mensaje?
+                ¿Desea dejarnos un mensaje?
               </label>
               <textarea
                 rows={4}
