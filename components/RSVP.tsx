@@ -71,19 +71,20 @@ export default function RSVP() {
         companions: form.companions,
         message: form.message,
       };
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbz3hUH8osRa_3RtnGC2MOziEMfrk9cxkGnJsq_1d01rWY6TdGnHU5a7WpcU1ZWUtHo/exec",
-        {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch("/api/rsvp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Error al guardar la confirmación");
+      }
       setSubmitted(true);
     } catch (error) {
       console.error("Error saving RSVP:", error);
-      alert("Hubo un error al enviar tu respuesta. Por favor intenta de nuevo.");
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      alert(`No se pudo enviar tu confirmación:\n\n${message}\n\nPor favor intenta de nuevo o contacta al organizador.`);
     } finally {
       setIsSending(false);
     }
