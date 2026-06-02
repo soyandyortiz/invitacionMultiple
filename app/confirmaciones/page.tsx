@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, LogOut, Users, CheckCircle, XCircle, RefreshCw } from "lucide-react";
+import { Lock, LogOut, Users, CheckCircle, XCircle, RefreshCw, FileDown } from "lucide-react";
 
 interface RSVPData {
   fullName: string;
@@ -139,6 +139,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [data, setData] = useState<RSVPData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [filterOrigin, setFilterOrigin] = useState("all");
   const [filterAttending, setFilterAttending] = useState("all");
 
@@ -175,6 +176,154 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     return matchOrigin && matchAtt;
   });
 
+  const downloadPDF = async () => {
+    setDownloading(true);
+    try {
+      const { default: jsPDF } = await import("jspdf");
+      const { default: autoTable } = await import("jspdf-autotable");
+
+      const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+      const GOLD = [180, 140, 40] as [number, number, number];
+      const GOLD_DARK = [120, 80, 15] as [number, number, number];
+      const BEIGE = [245, 240, 225] as [number, number, number];
+      const W = doc.internal.pageSize.getWidth();
+
+      // ── Encabezado ──
+      doc.setFillColor(...GOLD_DARK);
+      doc.rect(0, 0, W, 22, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text("CONFIRMACIONES DE ASISTENCIA", W / 2, 10, { align: "center" });
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.text("Morocho · Clavijo  —  Sábado 4 de Julio 2026", W / 2, 17, { align: "center" });
+
+      // Generado el…
+      doc.setTextColor(120, 100, 60);
+      doc.setFontSize(7);
+      doc.text(`Generado: ${new Date().toLocaleString("es-EC")}`, W - 10, 26, { align: "right" });
+
+      // ── Resumen ──
+      const attending = data.filter((d) => d.attending === "yes");
+      const totalPersons = attending.reduce((a, d) => a + 1 + (d.guestCount || 0), 0);
+      const summary = [
+        ["Total respuestas", String(data.length)],
+        ["Asistirán", String(attending.length)],
+        ["No asistirán", String(data.filter((d) => d.attending === "no").length)],
+        ["Total personas confirmadas", String(totalPersons)],
+      ];
+      let y = 30;
+      doc.setFontSize(8);
+      doc.setTextColor(...GOLD_DARK);
+      doc.setFont("helvetica", "bold");
+      doc.text("RESUMEN", 10, y);
+      y += 4;
+      summary.forEach(([label, val]) => {
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(80, 60, 20);
+        doc.text(`${label}:`, 12, y);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...GOLD_DARK);
+        doc.text(val, 65, y);
+        y += 4.5;
+      });
+
+      // ── Grupos ──
+      const groups = [
+        { label: "FAMILIA CLAVIJO", rows: data.filter((d) => d.origin === "Familia Clavijo") },
+        { label: "FAMILIA MOROCHO", rows: data.filter((d) => d.origin === "Familia Morocho") },
+        { label: "AMISTADES",        rows: data.filter((d) => d.origin === "Amistades") },
+      ];
+
+      const COLS = ["N°", "Nombre Completo", "Asistirá", "Eventos", "+Pers.", "Acompañantes", "Mensaje", "Fecha Registro"];
+      const WIDTHS = [8, 45, 14, 60, 12, 50, 55, 30];
+
+      groups.forEach((group) => {
+        if (group.rows.length === 0) return;
+
+        // Título de sección
+        const currentY: number = (doc as any).lastAutoTable?.finalY
+          ? (doc as any).lastAutoTable.finalY + 8
+          : y + 4;
+
+        doc.setFillColor(...GOLD);
+        doc.roundedRect(10, currentY - 4, W - 20, 7, 1, 1, "F");
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "bold");
+        doc.text(`${group.label}  (${group.rows.length} respuestas)`, 14, currentY);
+
+        autoTable(doc, {
+          startY: currentY + 5,
+          head: [COLS],
+          body: group.rows.map((row, i) => [
+            String(i + 1),
+            row.fullName || "",
+            row.attending === "yes" ? "Sí ✓" : "No ✗",
+            (row.events || "").replace(/,\s*/g, "\n"),
+            row.guestCount > 0 ? `+${row.guestCount}` : "—",
+            row.companions?.map((c) => c.name).filter(Boolean).join("\n") || "—",
+            row.message || "—",
+            row.date ? String(row.date).substring(0, 16) : "—",
+          ]),
+          columnStyles: WIDTHS.reduce<Record<number, { cellWidth: number }>>((acc, w, i) => {
+            acc[i] = { cellWidth: w };
+            return acc;
+          }, {}),
+          headStyles: {
+            fillColor: GOLD_DARK,
+            textColor: [255, 255, 255],
+            fontStyle: "bold",
+            fontSize: 7,
+            cellPadding: 2,
+          },
+          bodyStyles: { fontSize: 7, cellPadding: 2, textColor: [50, 40, 10] },
+          alternateRowStyles: { fillColor: BEIGE },
+          didParseCell: (hookData) => {
+            if (hookData.column.index === 2 && hookData.section === "body") {
+              const val = String(hookData.cell.text);
+              hookData.cell.styles.textColor = val.startsWith("Sí")
+                ? [22, 100, 50]
+                : [180, 30, 30];
+              hookData.cell.styles.fontStyle = "bold";
+            }
+          },
+          margin: { left: 10, right: 10 },
+          tableWidth: W - 20,
+          showHead: "everyPage",
+          didDrawPage: () => {
+            // Pie de página en cada página
+            const pageCount = (doc as any).internal.getNumberOfPages();
+            doc.setFontSize(7);
+            doc.setTextColor(180, 160, 120);
+            doc.text(
+              `Pág. ${pageCount}  —  Morocho · Clavijo 2026`,
+              W / 2,
+              doc.internal.pageSize.getHeight() - 5,
+              { align: "center" }
+            );
+          },
+        });
+      });
+
+      // Pie final
+      const finalY: number = (doc as any).lastAutoTable?.finalY ?? 200;
+      doc.setFontSize(7);
+      doc.setTextColor(160, 140, 100);
+      doc.text(
+        `Total personas confirmadas: ${totalPersons}  |  Respuestas: ${data.length}`,
+        W / 2,
+        finalY + 8,
+        { align: "center" }
+      );
+
+      doc.save("confirmaciones-morocho-clavijo-2026.pdf");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-ivory font-sans">
       {/* Header */}
@@ -192,6 +341,19 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               title="Actualizar datos"
             >
               <RefreshCw className={`w-4 h-4 text-foreground/40 group-hover:text-gold transition-colors ${refreshing ? "animate-spin" : ""}`} />
+            </button>
+            <button
+              onClick={downloadPDF}
+              disabled={downloading || loading || data.length === 0}
+              className="flex items-center gap-2 px-4 py-2 bg-gold-dark text-white text-xs font-bold rounded-xl hover:bg-gold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Descargar PDF"
+            >
+              {downloading ? (
+                <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <FileDown className="w-3.5 h-3.5" />
+              )}
+              {downloading ? "Generando..." : "Descargar PDF"}
             </button>
             <button
               onClick={onLogout}
