@@ -223,9 +223,10 @@ export default function Hero() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="uppercase tracking-[0.3em] text-[10px] mb-4 font-bold bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 inline-block"
+            className="uppercase tracking-[0.2em] text-[9px] mb-4 font-bold bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 inline-block"
           >
-            Una Celebración en Familia · 4 de Julio, 2026
+            <span className="sm:hidden">4 de Julio · 2026</span>
+            <span className="hidden sm:inline">Una Celebración en Familia · 4 de Julio, 2026</span>
           </motion.p>
 
           <motion.h1
@@ -284,7 +285,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 1.4 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
-            className="inline-block px-8 py-4 bg-gold text-white font-serif text-lg rounded-full shadow-xl hover:bg-gold-dark transition-all"
+            className="inline-block px-6 py-3 bg-gold text-white font-serif text-base rounded-full shadow-xl hover:bg-gold-dark transition-all"
           >
             Confirmar Asistencia
           </motion.a>
@@ -292,25 +293,25 @@ export default function Hero() {
       </div>
 
       {/* ── Barra inferior: flechas + dots + scroll ── */}
-      <div className="relative z-20 flex items-center justify-between px-4 md:px-8 py-4">
+      <div className="relative z-20 flex items-center justify-between px-4 md:px-8 py-3 md:py-4">
         <button
           onClick={prev}
           aria-label="Anterior"
-          className="p-2.5 bg-black/30 backdrop-blur-sm border border-white/20 rounded-full text-white hover:bg-black/50 hover:border-gold/50 transition-all group"
+          className="p-2 md:p-2.5 bg-black/30 backdrop-blur-sm border border-white/20 rounded-full text-white hover:bg-black/50 hover:border-gold/50 transition-all group focus:outline-none"
         >
-          <ChevronLeft className="w-5 h-5 group-hover:text-gold transition-colors" />
+          <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 group-hover:text-gold transition-colors" />
         </button>
 
-        <div className="flex items-end gap-5 md:gap-8">
+        <div className="flex items-end gap-4 md:gap-8">
           {slides.map((s, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
               aria-label={s.event}
-              className="flex flex-col items-center gap-1.5 group"
+              className="flex flex-col items-center gap-1.5 group focus:outline-none"
             >
               <span
-                className="text-[9px] md:text-[10px] uppercase tracking-[0.12em] font-bold transition-colors duration-300"
+                className="hidden md:block text-[10px] uppercase tracking-[0.12em] font-bold transition-colors duration-300"
                 style={{
                   color: i === current ? "#D4AF37" : "rgba(255,255,255,0.55)",
                   textShadow: "0 1px 4px rgba(0,0,0,0.9)",
@@ -334,7 +335,7 @@ export default function Hero() {
           animate={{ y: [0, 5, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           onClick={() => document.getElementById("countdown")?.scrollIntoView({ behavior: "smooth" })}
-          className="flex flex-col items-center gap-1 group"
+          className="flex flex-col items-center gap-1 group focus:outline-none"
         >
           <span
             className="text-[9px] uppercase tracking-widest font-bold group-hover:text-gold transition-colors"
