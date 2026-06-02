@@ -1,153 +1,382 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { Lock, LogOut, Users, CheckCircle, XCircle, RefreshCw } from "lucide-react";
 
 interface RSVPData {
-  origin: string;
   fullName: string;
+  origin: string;
   attending: string;
+  events: string;
   guestCount: number;
   companions: { name: string; type: string }[];
   message: string;
   date: string;
 }
 
-export default function Dashboard() {
-  const [data, setData] = useState<RSVPData[]>([]);
-  const [filterNovio, setFilterNovio] = useState("all");
-  const [filterType, setFilterType] = useState("all");
+const SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbxwqcYqo47T46fFOzaEDkDFyqbB84ZXP_exedVgPMuwrdhKHdDLD3uJvbWUimQxKwM-/exec";
 
-  const [loading, setLoading] = useState(true);
+// ── Login ──────────────────────────────────────────────────────────────
+function LoginScreen({ onLogin }: { onLogin: () => void }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbxwqcYqo47T46fFOzaEDkDFyqbB84ZXP_exedVgPMuwrdhKHdDLD3uJvbWUimQxKwM-/exec");
-        const json = await response.json();
-        setData(json);
-      } catch (error) {
-        console.error("Error fetching RSVP data:", error);
-      } finally {
-        setLoading(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin-auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        sessionStorage.setItem("admin_auth", "true");
+        onLogin();
+      } else {
+        setError("Contraseña incorrecta");
       }
-    };
+    } catch {
+      setError("Error de conexión. Intenta de nuevo.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
-  }, []);
+  return (
+    <div className="min-h-screen bg-ivory flex items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white rounded-3xl shadow-2xl border border-beige p-10 w-full max-w-sm text-center"
+      >
+        <div className="w-14 h-14 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Lock className="w-6 h-6 text-gold" />
+        </div>
+        <h1 className="text-2xl font-serif text-gold-dark mb-1">Panel Admin</h1>
+        <p className="text-xs text-foreground/40 uppercase tracking-widest mb-8">
+          Morocho · Clavijo 2026
+        </p>
 
-  const totalGuests = data
-    .filter(d => d.attending === "yes")
-    .reduce((acc, curr) => acc + 1 + curr.guestCount, 0);
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="password"
+            placeholder="Contraseña"
+            required
+            value={password}
+            onChange={(e) => { setPassword(e.target.value); setError(""); }}
+            className="w-full p-4 border border-beige rounded-2xl text-center font-serif text-lg focus:outline-none focus:border-gold focus:ring-4 focus:ring-gold/5 transition-all"
+          />
+          <AnimatePresence>
+            {error && (
+              <motion.p
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="text-red-500 text-sm"
+              >
+                {error}
+              </motion.p>
+            )}
+          </AnimatePresence>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-4 bg-gold-dark text-white font-serif text-lg rounded-2xl hover:bg-gold transition-all shadow-lg disabled:opacity-60"
+          >
+            {loading ? (
+              <span className="inline-flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Verificando...
+              </span>
+            ) : (
+              "Ingresar"
+            )}
+          </button>
+        </form>
 
-  const filteredData = data.filter(d => {
-    const matchNovio = filterNovio === "all" || d.origin.includes(filterNovio);
-    const matchType = filterType === "all" || (filterType === "friend" ? d.origin === "Amistades" : d.origin !== "Amistades");
-    return matchNovio && matchType;
+        <a href="/" className="block mt-6 text-xs text-foreground/30 hover:text-gold transition-colors">
+          ← Volver a la invitación
+        </a>
+      </motion.div>
+    </div>
+  );
+}
+
+// ── Stat card ──────────────────────────────────────────────────────────
+function StatCard({
+  label,
+  value,
+  sub,
+  color = "gold",
+}: {
+  label: string;
+  value: number | string;
+  sub?: string;
+  color?: "gold" | "green" | "red" | "blue";
+}) {
+  const colors = {
+    gold: "bg-gold-dark text-white",
+    green: "bg-green-600 text-white",
+    red: "bg-red-500 text-white",
+    blue: "bg-sky-600 text-white",
+  };
+  return (
+    <div className={`${colors[color]} p-5 rounded-2xl shadow-md text-center`}>
+      <span className="block text-3xl font-serif mb-0.5">{value}</span>
+      <span className="text-xs uppercase tracking-widest opacity-80 block">{label}</span>
+      {sub && <span className="text-[10px] opacity-60 mt-0.5 block">{sub}</span>}
+    </div>
+  );
+}
+
+// ── Dashboard ──────────────────────────────────────────────────────────
+function Dashboard({ onLogout }: { onLogout: () => void }) {
+  const [data, setData] = useState<RSVPData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [filterOrigin, setFilterOrigin] = useState("all");
+  const [filterAttending, setFilterAttending] = useState("all");
+
+  const load = async (showRefresh = false) => {
+    if (showRefresh) setRefreshing(true);
+    else setLoading(true);
+    try {
+      const res = await fetch(SCRIPT_URL);
+      const json = await res.json();
+      setData(Array.isArray(json) ? json : []);
+    } catch {
+      console.error("Error cargando datos");
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const attending = data.filter((d) => d.attending === "yes");
+  const notAttending = data.filter((d) => d.attending === "no");
+  const totalPersons = attending.reduce((acc, d) => acc + 1 + (d.guestCount || 0), 0);
+
+  const byOrigin = (origin: string) =>
+    attending.filter((d) => d.origin === origin).reduce((acc, d) => acc + 1 + (d.guestCount || 0), 0);
+
+  const byEvent = (keyword: string) =>
+    attending.filter((d) => d.events?.toLowerCase().includes(keyword)).reduce((acc, d) => acc + 1 + (d.guestCount || 0), 0);
+
+  const filtered = data.filter((d) => {
+    const matchOrigin = filterOrigin === "all" || d.origin === filterOrigin;
+    const matchAtt = filterAttending === "all" || d.attending === filterAttending;
+    return matchOrigin && matchAtt;
   });
 
   return (
-    <div className="min-h-screen bg-ivory p-6 md:p-12 font-sans">
-      <div className="max-w-6xl mx-auto">
-        <header className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+    <div className="min-h-screen bg-ivory font-sans">
+      {/* Header */}
+      <div className="bg-white border-b border-beige sticky top-0 z-10 shadow-sm">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-serif text-gold-dark">Confirmaciones</h1>
-            <p className="text-foreground/50">Dashboard de Invitados para Eric & Evelin</p>
+            <h1 className="text-xl font-serif text-gold-dark leading-none">Panel de Confirmaciones</h1>
+            <p className="text-xs text-foreground/40 mt-0.5">Morocho · Clavijo · 4 de Julio 2026</p>
           </div>
-          <div className="bg-gold-dark text-white p-6 rounded-2xl shadow-lg text-center min-w-[200px]">
-            <span className="block text-4xl font-serif">{totalGuests}</span>
-            <span className="text-xs uppercase tracking-widest opacity-80">Total Invitados Asistirán</span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => load(true)}
+              disabled={refreshing}
+              className="p-2.5 border border-beige rounded-xl hover:border-gold/40 transition-all group"
+              title="Actualizar datos"
+            >
+              <RefreshCw className={`w-4 h-4 text-foreground/40 group-hover:text-gold transition-colors ${refreshing ? "animate-spin" : ""}`} />
+            </button>
+            <button
+              onClick={onLogout}
+              className="flex items-center gap-2 px-4 py-2 border border-beige rounded-xl text-xs text-foreground/50 hover:border-red-300 hover:text-red-400 transition-all"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Salir
+            </button>
           </div>
-        </header>
+        </div>
+      </div>
 
-        <div className="grid md:grid-cols-2 gap-4 mb-8">
-          <select 
-            className="p-4 rounded-xl border border-beige bg-white shadow-sm focus:outline-none focus:ring-1 focus:ring-gold"
-            value={filterNovio}
-            onChange={(e) => setFilterNovio(e.target.value)}
-          >
-            <option value="all">Ver Todas las Familias</option>
-            <option value="Novia Evelin">Familia Evelin</option>
-            <option value="Novio Eric">Familia Eric</option>
-            <option value="Amistades">Solo Amistades</option>
-          </select>
+      <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
 
-          <select 
-            className="p-4 rounded-xl border border-beige bg-white shadow-sm focus:outline-none focus:ring-1 focus:ring-gold"
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-          >
-            <option value="all">Todos los Tipos</option>
-            <option value="family">Familiares</option>
-            <option value="friend">Amistades</option>
-          </select>
+        {/* Resumen general */}
+        <div>
+          <p className="text-xs uppercase tracking-widest text-foreground/40 font-bold mb-4">Resumen General</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <StatCard label="Total personas" value={totalPersons} color="gold" />
+            <StatCard label="Confirmaron" value={attending.length} sub="respuestas" color="green" />
+            <StatCard label="No asistirán" value={notAttending.length} sub="respuestas" color="red" />
+            <StatCard label="Respuestas" value={data.length} sub="en total" color="blue" />
+          </div>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-sm border border-beige overflow-hidden">
-          {loading ? (
-            <div className="p-20 text-center">
-              <div className="animate-spin inline-block w-8 h-8 border-4 border-gold border-t-transparent rounded-full mb-4"></div>
-              <p className="text-foreground/50 italic font-serif">Cargando confirmaciones...</p>
-            </div>
-          ) : (
-            <>
+        {/* Por familia */}
+        <div>
+          <p className="text-xs uppercase tracking-widest text-foreground/40 font-bold mb-4">Por Familia</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {[
+              { label: "Familia Clavijo", key: "Familia Clavijo" },
+              { label: "Familia Morocho", key: "Familia Morocho" },
+              { label: "Amistades", key: "Amistades" },
+            ].map((f) => (
+              <div key={f.key} className="bg-white border border-beige rounded-2xl p-5 flex items-center justify-between shadow-sm hover:border-gold/30 transition-all">
+                <span className="font-serif text-gold-dark">{f.label}</span>
+                <span className="text-3xl font-serif text-gold">{byOrigin(f.key)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Por evento */}
+        <div>
+          <p className="text-xs uppercase tracking-widest text-foreground/40 font-bold mb-4">Por Evento</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { emoji: "⛪", label: "Primera Comunión", key: "primera" },
+              { emoji: "💍", label: "Matrimonio", key: "matrimonio" },
+              { emoji: "🕊️", label: "Bautizos", key: "bautizo" },
+              { emoji: "🏡", label: "Recepción", key: "recepci" },
+            ].map((ev) => (
+              <div key={ev.key} className="bg-white border border-beige rounded-2xl p-4 text-center shadow-sm hover:border-gold/30 transition-all">
+                <span className="text-2xl block mb-1">{ev.emoji}</span>
+                <span className="text-2xl font-serif text-gold-dark block">{byEvent(ev.key)}</span>
+                <span className="text-[10px] uppercase tracking-widest text-foreground/40">{ev.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Filtros + Tabla */}
+        <div>
+          <p className="text-xs uppercase tracking-widest text-foreground/40 font-bold mb-4">Lista de Respuestas</p>
+
+          <div className="flex flex-wrap gap-3 mb-4">
+            <select
+              value={filterOrigin}
+              onChange={(e) => setFilterOrigin(e.target.value)}
+              className="flex-1 min-w-[160px] p-3 rounded-xl border border-beige bg-white text-sm focus:outline-none focus:border-gold transition-all"
+            >
+              <option value="all">Todas las familias</option>
+              <option value="Familia Clavijo">Familia Clavijo</option>
+              <option value="Familia Morocho">Familia Morocho</option>
+              <option value="Amistades">Amistades</option>
+            </select>
+            <select
+              value={filterAttending}
+              onChange={(e) => setFilterAttending(e.target.value)}
+              className="flex-1 min-w-[140px] p-3 rounded-xl border border-beige bg-white text-sm focus:outline-none focus:border-gold transition-all"
+            >
+              <option value="all">Todos</option>
+              <option value="yes">Solo asisten</option>
+              <option value="no">No asisten</option>
+            </select>
+          </div>
+
+          <div className="bg-white rounded-3xl shadow-sm border border-beige overflow-hidden">
+            {loading ? (
+              <div className="p-20 text-center">
+                <div className="w-8 h-8 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-foreground/40 italic font-serif text-sm">Cargando datos...</p>
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="p-20 text-center text-foreground/30 font-serif italic">
+                No se encontraron registros.
+              </div>
+            ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead className="bg-beige/30">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-beige/30 border-b border-beige">
                     <tr>
-                      <th className="p-6 font-serif text-gold-dark">Nombre Principal</th>
-                      <th className="p-6 font-serif text-gold-dark">Origen</th>
-                      <th className="p-6 font-serif text-gold-dark">Asistirá</th>
-                      <th className="p-6 font-serif text-gold-dark">Invitados Extras</th>
-                      <th className="p-6 font-serif text-gold-dark">Mensaje</th>
+                      {["Nombre", "Origen", "Asiste", "Eventos", "Acompañantes", "Mensaje"].map((h) => (
+                        <th key={h} className="px-5 py-4 font-serif text-gold-dark text-sm whitespace-nowrap">
+                          {h}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-beige/50">
-                    {filteredData.map((row, i) => (
-                      <tr key={i} className="hover:bg-ivory/20 transition-colors">
-                        <td className="p-6">
-                          <p className="font-bold text-foreground">{row.fullName}</p>
+                  <tbody className="divide-y divide-beige/40">
+                    {filtered.map((row, i) => (
+                      <motion.tr
+                        key={i}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: i * 0.03 }}
+                        className="hover:bg-ivory/50 transition-colors"
+                      >
+                        <td className="px-5 py-4 font-bold text-foreground whitespace-nowrap">{row.fullName}</td>
+                        <td className="px-5 py-4 text-foreground/60 whitespace-nowrap">{row.origin}</td>
+                        <td className="px-5 py-4">
+                          {row.attending === "yes" ? (
+                            <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-bold px-2.5 py-1 rounded-full border border-green-200">
+                              <CheckCircle className="w-3 h-3" /> Sí
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-bold px-2.5 py-1 rounded-full border border-red-200">
+                              <XCircle className="w-3 h-3" /> No
+                            </span>
+                          )}
                         </td>
-                        <td className="p-6 text-sm text-foreground/70">{row.origin}</td>
-                        <td className="p-6">
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                            row.attending === 'yes' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                          }`}>
-                            {row.attending === 'yes' ? 'SÍ' : 'NO'}
-                          </span>
+                        <td className="px-5 py-4 text-foreground/60 max-w-[180px]">
+                          <span className="text-xs leading-relaxed">{row.events || "—"}</span>
                         </td>
-                        <td className="p-6">
+                        <td className="px-5 py-4">
                           {row.guestCount > 0 ? (
-                            <div className="space-y-1">
-                              {row.companions && Array.isArray(row.companions) ? row.companions.map((c, ci) => (
-                                <span key={ci} className="block text-xs bg-gold/10 text-gold-dark p-1 rounded">
+                            <div className="flex flex-col gap-1">
+                              <span className="inline-flex items-center gap-1 text-xs text-gold-dark font-bold">
+                                <Users className="w-3 h-3" /> +{row.guestCount}
+                              </span>
+                              {row.companions?.map((c, ci) => (
+                                <span key={ci} className="text-[11px] bg-gold/8 text-gold-dark px-2 py-0.5 rounded-full border border-gold/15">
                                   {c.name}
                                 </span>
-                              )) : null}
+                              ))}
                             </div>
-                          ) : <span className="text-foreground/30 text-xs">Ninguno</span>}
+                          ) : (
+                            <span className="text-foreground/25 text-xs">Solo</span>
+                          )}
                         </td>
-                        <td className="p-6 text-sm text-foreground/60 italic max-w-xs truncate">
-                          {row.message || "-"}
+                        <td className="px-5 py-4 text-foreground/50 italic max-w-[200px] truncate text-xs">
+                          {row.message || "—"}
                         </td>
-                      </tr>
+                      </motion.tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              {filteredData.length === 0 && (
-                <div className="p-20 text-center text-foreground/30">
-                  <p>No se encontraron registros todavía.</p>
-                </div>
-              )}
-            </>
-          )}
+            )}
+          </div>
+          <p className="text-right text-xs text-foreground/30 mt-2">{filtered.length} registros mostrados</p>
         </div>
-        
-        <div className="mt-8 flex justify-center">
-          <a href="/" className="text-gold text-sm underline">Volver a la Invitación</a>
-        </div>
+
       </div>
     </div>
   );
+}
+
+// ── Página principal ───────────────────────────────────────────────────
+export default function ConfirmacionesPage() {
+  const [isAuth, setIsAuth] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const auth = sessionStorage.getItem("admin_auth");
+    setIsAuth(auth === "true");
+    setChecking(false);
+  }, []);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("admin_auth");
+    setIsAuth(false);
+  };
+
+  if (checking) return null;
+  if (!isAuth) return <LoginScreen onLogin={() => setIsAuth(true)} />;
+  return <Dashboard onLogout={handleLogout} />;
 }

@@ -1,3 +1,5 @@
+import { Lock } from "lucide-react";
+
 export default function Footer() {
   return (
     <footer className="py-16 bg-[#2D2D2D] text-white text-center relative overflow-hidden">
@@ -49,6 +51,15 @@ export default function Footer() {
           </p>
         </div>
       </div>
+
+      {/* Acceso admin - discreto, esquina inferior derecha */}
+      <a
+        href="/confirmaciones"
+        title="Panel de administración"
+        className="absolute bottom-4 right-5 p-2 text-white/10 hover:text-white/40 transition-colors duration-300 group"
+      >
+        <Lock className="w-3.5 h-3.5" />
+      </a>
     </footer>
   );
 }
