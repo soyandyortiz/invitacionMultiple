@@ -2,29 +2,38 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, ChevronDown, Users } from "lucide-react";
+import { MapPin, ChevronDown, Users, Heart } from "lucide-react";
 import Image from "next/image";
+
+const IGLESIA_ESPIRITU_SANTO = "Iglesia Espíritu Santo";
+const IGLESIA_ESPIRITU_SANTO_MAP = "https://maps.app.goo.gl/1zYWoxepB2rgeg247";
+const IGLESIA_ESPIRITU_SANTO_ADDR = "Monseñor Andrade y Edelberto Bonilla";
 
 const events = [
   {
-    emoji: "⛪",
+    emoji: "✝️",
     time: "10:00 AM",
-    title: "Primera Comunión",
+    title: "Confirmación",
     location: "Iglesia de Santa Faz",
     mapLink: "https://maps.app.goo.gl/N1YRmzWh8MZh78Vb7",
     protagonists: ["Pablo Ariel Morocho Clavijo"],
     details: ["Madrina: Elizabeth Lluguin"],
+    weddingParents: null,
     image: "/images/primera-comunion.png",
     dotColor: "bg-gold",
   },
   {
     emoji: "💍",
-    time: "2:00 PM",
+    time: "12:00 PM",
     title: "Matrimonio Civil y Eclesiástico",
-    location: "Iglesia de San Francisco",
-    mapLink: "https://maps.app.goo.gl/ymt6C8MRfywAwbL8A",
+    location: IGLESIA_ESPIRITU_SANTO,
+    mapLink: IGLESIA_ESPIRITU_SANTO_MAP,
     protagonists: ["Silvana Clavijo", "Pablo Morocho"],
-    details: [],
+    details: [IGLESIA_ESPIRITU_SANTO_ADDR],
+    weddingParents: {
+      groom: { label: "Padres del novio", names: "Adolfo Morocho & Piedad Valdivieso" },
+      bride: { label: "Padres de la novia", names: "David Clavijo & Julia González" },
+    },
     image: "/images/boda.png",
     dotColor: "bg-rose-400",
   },
@@ -32,10 +41,11 @@ const events = [
     emoji: "🕊️",
     time: "A continuación del matrimonio",
     title: "Bautizos",
-    location: "Iglesia de San Francisco",
-    mapLink: "https://maps.app.goo.gl/ymt6C8MRfywAwbL8A",
+    location: IGLESIA_ESPIRITU_SANTO,
+    mapLink: IGLESIA_ESPIRITU_SANTO_MAP,
     protagonists: ["Luka Josue", "Rommel Adolfito"],
-    details: ["Se realiza en la misma iglesia que la boda"],
+    details: [IGLESIA_ESPIRITU_SANTO_ADDR],
+    weddingParents: null,
     image: "/images/bautizo.png",
     dotColor: "bg-sky-400",
   },
@@ -47,6 +57,7 @@ const events = [
     mapLink: "https://maps.app.goo.gl/tWbPJ2fGYAmmMsBv9",
     protagonists: [],
     details: ["Av. Alfonso Chávez entre Rivera y Dr. Ángel Martínez"],
+    weddingParents: null,
     image: null,
     dotColor: "bg-emerald-400",
   },
@@ -179,6 +190,28 @@ export default function EventInfo() {
                                             {name}
                                           </span>
                                         ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Padres de los novios */}
+                                {event.weddingParents && (
+                                  <div className="flex items-start gap-3">
+                                    <Heart className="w-4 h-4 text-rose-400 mt-0.5 flex-shrink-0" />
+                                    <div className="space-y-2">
+                                      <p className="text-xs text-foreground/45 uppercase tracking-widest font-bold mb-1.5">
+                                        Con la bendición de sus padres
+                                      </p>
+                                      <div className="space-y-1.5">
+                                        <div>
+                                          <p className="text-xs text-foreground/45 uppercase tracking-wider">{event.weddingParents.groom.label}</p>
+                                          <p className="text-sm font-serif text-gold-dark">{event.weddingParents.groom.names}</p>
+                                        </div>
+                                        <div>
+                                          <p className="text-xs text-foreground/45 uppercase tracking-wider">{event.weddingParents.bride.label}</p>
+                                          <p className="text-sm font-serif text-gold-dark">{event.weddingParents.bride.names}</p>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>

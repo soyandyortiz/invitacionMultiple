@@ -25,9 +25,9 @@ Wedding invitation website for Eric & Evelin with RSVP and guest management.
 `Navbar` → `Hero` → `Countdown` → `EventInfo` → `Story (Protagonistas)` → `RSVP` → `Footer`
 
 **Event: Sábado 4 de Julio, 2026 — Familia Morocho · Clavijo**
-1. ⛪ Primera Comunión (10:00 AM) — Pablo Ariel Morocho Clavijo — Iglesia de Santa Faz
-2. 💍 Matrimonio (2:00 PM) — Silvana Clavijo & Pablo Morocho — Iglesia de San Francisco
-3. 🕊️ Bautizos (después del matrimonio) — Luka Josue & Rommel Adolfito — Iglesia de San Francisco
+1. ✝️ Confirmación (10:00 AM) — Pablo Ariel Morocho Clavijo — Iglesia de Santa Faz
+2. 💍 Matrimonio (12:00 PM) — Silvana Clavijo & Pablo Morocho — Iglesia Espíritu Santo (Monseñor Andrade y Edelberto Bonilla)
+3. 🕊️ Bautizos (después del matrimonio) — Luka Josue & Rommel Adolfito — Iglesia Espíritu Santo
 4. 🏡 Recepción — Casa de Targelia Godoy — Av. Alfonso Chávez entre Rivera y Dr. Ángel Martínez
 
 **Data flow:** RSVP form (`components/RSVP.tsx`) POSTs to a Google Apps Script Web App URL which writes to Google Sheets. The form sends: `origin`, `fullName`, `attending`, `events` (comma-separated list of selected events), `guestCount`, `companions[]`, `message`. The confirmations dashboard fetches from the same endpoint (GET) and filters by family origin (Familia Clavijo, Familia Morocho, Amistades).
