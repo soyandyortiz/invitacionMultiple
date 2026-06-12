@@ -151,12 +151,12 @@ function PaymentGate({ onLogout }: { onLogout: () => void }) {
           Una vez realizada la transferencia, envía el comprobante de pago para activar el acceso completo.
         </p>
 
-        <button
-          onClick={onLogout}
+        <a
+          href="/"
           className="text-xs text-foreground/30 hover:text-gold transition-colors"
         >
-          ← Cerrar sesión
-        </button>
+          ← Volver a la invitación
+        </a>
       </motion.div>
     </div>
   );
@@ -593,8 +593,8 @@ export default function ConfirmacionesPage() {
     setIsAuth(false);
   };
 
+  if (!PAGO_COMPLETADO) return <PaymentGate onLogout={() => {}} />;
   if (checking) return null;
   if (!isAuth) return <LoginScreen onLogin={() => setIsAuth(true)} />;
-  if (!PAGO_COMPLETADO) return <PaymentGate onLogout={handleLogout} />;
   return <Dashboard onLogout={handleLogout} />;
 }
