@@ -22,7 +22,7 @@ export default function Footer() {
         </div>
 
         <div className="flex justify-center gap-6 mb-10 flex-wrap">
-          {["⛪ Primera Comunión", "💍 Matrimonio", "🕊️ Bautizos", "🏡 Recepción"].map((item) => (
+          {["✝️ Confirmación", "💍 Matrimonio", "🕊️ Bautizos", "🏡 Recepción"].map((item) => (
             <span key={item} className="text-white/30 text-xs tracking-widest">{item}</span>
           ))}
         </div>

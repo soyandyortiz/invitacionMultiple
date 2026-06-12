@@ -8,19 +8,24 @@ import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 const slides = [
   {
     image: "/images/primera-comunion.png",
-    event: "Primera Comunión",
-    emoji: "⛪",
+    event: "Confirmación",
+    emoji: "✝️",
     time: "10:00 AM",
     names: "Pablo Ariel Morocho Clavijo",
     extra: "Madrina: Elizabeth Lluguin · Iglesia de Santa Faz",
+    parents: null,
   },
   {
     image: "/images/boda.png",
     event: "Matrimonio",
     emoji: "💍",
-    time: "2:00 PM",
+    time: "12:00 PM",
     names: "Silvana Clavijo & Pablo Morocho",
-    extra: "Iglesia de San Francisco",
+    extra: "Iglesia Espíritu Santo · Monseñor Andrade y Edelberto Bonilla",
+    parents: {
+      groom: "Adolfo Morocho & Piedad Valdivieso",
+      bride: "David Clavijo & Julia González",
+    },
   },
   {
     image: "/images/bautizo.png",
@@ -28,7 +33,8 @@ const slides = [
     emoji: "🕊️",
     time: "Después del Matrimonio",
     names: "Luka Josue & Rommel Adolfito",
-    extra: "Iglesia de San Francisco",
+    extra: "Iglesia Espíritu Santo · Monseñor Andrade y Edelberto Bonilla",
+    parents: null,
   },
 ];
 
@@ -199,6 +205,19 @@ export default function Hero() {
                 >
                   {slide.extra}
                 </p>
+                {slide.parents && (
+                  <div className="mt-3 pt-3 border-t border-white/15 space-y-1">
+                    <p className="text-white/45 text-[10px] uppercase tracking-[0.2em] font-bold">
+                      Con la bendición de sus padres
+                    </p>
+                    <p className="text-white/80 text-xs font-serif">
+                      <span className="text-white/45">Novio · </span>{slide.parents.groom}
+                    </p>
+                    <p className="text-white/80 text-xs font-serif">
+                      <span className="text-white/45">Novia · </span>{slide.parents.bride}
+                    </p>
+                  </div>
+                )}
               </motion.div>
             </AnimatePresence>
 
@@ -275,6 +294,13 @@ export default function Hero() {
               >
                 {slide.names}
               </p>
+              {slide.parents && (
+                <div className="mt-2 pt-2 border-t border-white/15 space-y-0.5">
+                  <p className="text-white/40 text-[9px] uppercase tracking-[0.18em] font-bold">Con la bendición de sus padres</p>
+                  <p className="text-white/70 text-[10px] font-serif">{slide.parents.groom}</p>
+                  <p className="text-white/70 text-[10px] font-serif">{slide.parents.bride}</p>
+                </div>
+              )}
             </motion.div>
           </AnimatePresence>
 
