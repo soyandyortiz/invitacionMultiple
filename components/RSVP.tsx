@@ -10,8 +10,8 @@ interface GuestInfo {
 }
 
 const eventOptions = [
-  { id: "primera-comunion", label: "⛪ Primera Comunión (10:00 AM)" },
-  { id: "matrimonio", label: "💍 Matrimonio (2:00 PM)" },
+  { id: "primera-comunion", label: "✝️ Confirmación (10:00 AM)" },
+  { id: "matrimonio", label: "💍 Matrimonio (12:00 PM)" },
   { id: "bautizos", label: "🕊️ Bautizos (Después del Matrimonio)" },
   { id: "recepcion", label: "🏡 Recepción y Fiesta" },
 ];

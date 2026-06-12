@@ -6,7 +6,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 const images = [
-  { src: "/images/primera-comunion.png", alt: "Primera Comunión", label: "⛪ Primera Comunión" },
+  { src: "/images/primera-comunion.png", alt: "Confirmación", label: "✝️ Confirmación" },
   { src: "/images/boda.png",             alt: "Matrimonio",        label: "💍 Matrimonio" },
   { src: "/images/bautizo.png",          alt: "Bautizos",          label: "🕊️ Bautizos" },
   { src: "/images/galeria-0.jpg",        alt: "Celebración",       label: null },

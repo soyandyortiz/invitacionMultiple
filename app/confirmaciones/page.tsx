@@ -401,7 +401,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           <p className="text-xs uppercase tracking-widest text-foreground/40 font-bold mb-4">Por Evento</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { emoji: "⛪", label: "Primera Comunión", key: "primera" },
+              { emoji: "✝️", label: "Confirmación", key: "primera" },
               { emoji: "💍", label: "Matrimonio", key: "matrimonio" },
               { emoji: "🕊️", label: "Bautizos", key: "bautizo" },
               { emoji: "🏡", label: "Recepción", key: "recepci" },

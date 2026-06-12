@@ -53,7 +53,7 @@ export default function Countdown() {
           <div className="w-16 h-px bg-gold/40 mx-auto mb-4" />
           <p className="text-foreground/50 text-sm font-serif italic flex items-center justify-center gap-2">
             <Clock className="w-3.5 h-3.5" />
-            Primera Comunión · 10:00 AM
+            Confirmación · 10:00 AM
           </p>
         </motion.div>
 
@@ -103,8 +103,8 @@ export default function Countdown() {
           className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3"
         >
           {[
-            { emoji: "⛪", time: "10:00 AM", label: "Primera Comunión" },
-            { emoji: "💍", time: "2:00 PM", label: "Matrimonio" },
+            { emoji: "✝️", time: "10:00 AM", label: "Confirmación" },
+            { emoji: "💍", time: "12:00 PM", label: "Matrimonio" },
             { emoji: "🕊️", time: "Después", label: "Bautizos" },
             { emoji: "🏡", time: "Tarde", label: "Recepción" },
           ].map((item, i) => (

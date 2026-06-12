@@ -14,11 +14,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Morocho · Clavijo | Celebración Familiar 2026",
-  description: "Estás invitado a celebrar con nosotros: Primera Comunión, Matrimonio, Bautizos y Recepción. Sábado 4 de Julio de 2026, Riobamba.",
+  description: "Estás invitado a celebrar con nosotros: Confirmación, Matrimonio, Bautizos y Recepción. Sábado 4 de Julio de 2026, Riobamba.",
   metadataBase: new URL("https://invitacionmorochoclavijo.vercel.app"),
   openGraph: {
     title: "Morocho · Clavijo — Celebración Familiar · 4 de Julio 2026",
-    description: "Estás invitado a celebrar con nosotros: Primera Comunión, Matrimonio, Bautizos y Recepción. Sábado 4 de Julio de 2026, Riobamba.",
+    description: "Estás invitado a celebrar con nosotros: Confirmación, Matrimonio, Bautizos y Recepción. Sábado 4 de Julio de 2026, Riobamba.",
     url: "https://invitacionmorochoclavijo.vercel.app",
     siteName: "Invitación Morocho · Clavijo",
     images: [
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Morocho · Clavijo — Celebración Familiar · 4 de Julio 2026",
-    description: "Estás invitado a celebrar con nosotros: Primera Comunión, Matrimonio, Bautizos y Recepción.",
+    description: "Estás invitado a celebrar con nosotros: Confirmación, Matrimonio, Bautizos y Recepción.",
     images: ["/images/og-image.jpg"],
   },
 };

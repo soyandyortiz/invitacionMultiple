@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 
 const protagonists = [
   {
-    emoji: "⛪",
-    event: "Primera Comunión",
+    emoji: "✝️",
+    event: "Confirmación",
     names: ["Pablo Ariel Morocho Clavijo"],
     note: "Madrina: Elizabeth Lluguin",
     highlight: true,
