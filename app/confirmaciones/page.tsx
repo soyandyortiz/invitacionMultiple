@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, LogOut, Users, CheckCircle, XCircle, RefreshCw, FileDown } from "lucide-react";
+import { Lock, LogOut, Users, CheckCircle, XCircle, RefreshCw, FileDown, CreditCard, AlertCircle } from "lucide-react";
+
+const PAGO_COMPLETADO = false;
 
 interface RSVPData {
   fullName: string;
@@ -102,6 +104,59 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
         <a href="/" className="block mt-6 text-xs text-foreground/30 hover:text-gold transition-colors">
           ← Volver a la invitación
         </a>
+      </motion.div>
+    </div>
+  );
+}
+
+// ── Payment Gate ───────────────────────────────────────────────────────
+function PaymentGate({ onLogout }: { onLogout: () => void }) {
+  return (
+    <div className="min-h-screen bg-ivory flex items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white rounded-3xl shadow-2xl border border-beige p-10 w-full max-w-md text-center"
+      >
+        <div className="w-16 h-16 bg-amber-50 border-2 border-amber-200 rounded-full flex items-center justify-center mx-auto mb-6">
+          <AlertCircle className="w-7 h-7 text-amber-500" />
+        </div>
+
+        <h1 className="text-2xl font-serif text-gold-dark mb-2">Acceso Restringido</h1>
+        <p className="text-foreground/50 text-sm leading-relaxed mb-8">
+          Para desbloquear el panel de estadísticas y ver la lista completa de invitados,
+          completa el <span className="font-semibold text-gold-dark">pago del 50% restante</span> del servicio.
+        </p>
+
+        <div className="bg-beige/40 border border-beige rounded-2xl p-6 mb-8 text-left space-y-3">
+          <div className="flex items-center gap-2 mb-4">
+            <CreditCard className="w-4 h-4 text-gold" />
+            <p className="text-xs uppercase tracking-widest font-bold text-gold-dark">Datos de Transferencia</p>
+          </div>
+          {[
+            { label: "Banco", value: "Banco Pichincha" },
+            { label: "Titular", value: "Andy Ortiz" },
+            { label: "N° de Cuenta", value: "2207862136" },
+            { label: "Tipo", value: "Cuenta de Ahorros" },
+            { label: "Cédula", value: "0604511089" },
+          ].map(({ label, value }) => (
+            <div key={label} className="flex justify-between items-center border-b border-beige/60 pb-2 last:border-0 last:pb-0">
+              <span className="text-xs text-foreground/40 uppercase tracking-wider">{label}</span>
+              <span className="text-sm font-serif font-semibold text-gold-dark">{value}</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-xs text-foreground/35 leading-relaxed mb-6">
+          Una vez realizada la transferencia, envía el comprobante de pago para activar el acceso completo.
+        </p>
+
+        <button
+          onClick={onLogout}
+          className="text-xs text-foreground/30 hover:text-gold transition-colors"
+        >
+          ← Cerrar sesión
+        </button>
       </motion.div>
     </div>
   );
@@ -540,5 +595,6 @@ export default function ConfirmacionesPage() {
 
   if (checking) return null;
   if (!isAuth) return <LoginScreen onLogin={() => setIsAuth(true)} />;
+  if (!PAGO_COMPLETADO) return <PaymentGate onLogout={handleLogout} />;
   return <Dashboard onLogout={handleLogout} />;
 }
