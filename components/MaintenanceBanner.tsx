@@ -1,6 +1,6 @@
 "use client";
 
-const SHOW_BANNER = true;
+const SHOW_BANNER = false;
 
 export default function MaintenanceBanner() {
   if (!SHOW_BANNER) return null;
