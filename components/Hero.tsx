@@ -221,17 +221,30 @@ export default function Hero() {
               </motion.div>
             </AnimatePresence>
 
-            <motion.a
-              href="#rsvp"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.4 }}
-              whileHover={{ scale: 1.05, boxShadow: "0 16px 40px rgba(184,134,11,0.5)" }}
-              whileTap={{ scale: 0.97 }}
-              className="inline-block px-9 py-4 bg-gold text-white font-serif text-xl rounded-full shadow-xl hover:bg-gold-dark transition-all duration-300"
-            >
-              Confirmar Asistencia
-            </motion.a>
+            <div className="flex items-center gap-4 flex-wrap">
+              <motion.a
+                href="#rsvp"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.4 }}
+                whileHover={{ scale: 1.05, boxShadow: "0 16px 40px rgba(184,134,11,0.5)" }}
+                whileTap={{ scale: 0.97 }}
+                className="inline-block px-9 py-4 bg-gold text-white font-serif text-xl rounded-full shadow-xl hover:bg-gold-dark transition-all duration-300"
+              >
+                Confirmar Asistencia
+              </motion.a>
+              <motion.a
+                href="#evento"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.6 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+                className="inline-block px-9 py-4 bg-white/10 backdrop-blur-sm text-white font-serif text-xl rounded-full border border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300"
+              >
+                Ver Agenda
+              </motion.a>
+            </div>
           </div>
         </div>
       </div>
@@ -304,17 +317,30 @@ export default function Hero() {
             </motion.div>
           </AnimatePresence>
 
-          <motion.a
-            href="#rsvp"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.4 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-block px-6 py-3 bg-gold text-white font-serif text-base rounded-full shadow-xl hover:bg-gold-dark transition-all"
-          >
-            Confirmar Asistencia
-          </motion.a>
+          <div className="flex items-center justify-center gap-3 flex-wrap">
+            <motion.a
+              href="#rsvp"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.4 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-block px-6 py-3 bg-gold text-white font-serif text-base rounded-full shadow-xl hover:bg-gold-dark transition-all"
+            >
+              Confirmar Asistencia
+            </motion.a>
+            <motion.a
+              href="#evento"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.6 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-block px-6 py-3 bg-white/10 backdrop-blur-sm text-white font-serif text-base rounded-full border border-white/30 hover:bg-white/20 hover:border-white/50 transition-all"
+            >
+              Ver Agenda
+            </motion.a>
+          </div>
         </div>
       </div>
 
